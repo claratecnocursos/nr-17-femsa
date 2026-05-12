@@ -2310,11 +2310,47 @@
         opacity: 1;
       }
     }
+    /* MUSIC BUTTON */
+    .btn-music-toggle {
+      position: fixed;
+      z-index: 10000;
+      background: rgba(0,0,0,0.6);
+      color: #fff;
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 50px;
+      padding: 10px 20px;
+      font-size: 14px;
+      font-family: var(--font-h);
+      font-weight: 700;
+      cursor: pointer;
+      backdrop-filter: blur(5px);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+      transition: all 0.3s ease;
+      top: 20px;
+      left: 20px;
+      bottom: auto;
+      right: auto;
+    }
+
+    @media (max-width: 768px) {
+      .btn-music-toggle {
+        top: auto;
+        bottom: 80px;
+        left: 20px;
+      }
+    }
   </style>
 </head>
 
 <body>
-
+  <!-- BACKGROUND MUSIC -->
+  <audio id="bg-music" src="musica/musica.mpeg" loop></audio>
+  <button id="btn-music" onclick="toggleMusic()" class="btn-music-toggle">
+    🎵 Música: OFF
+  </button>
 
   <!-- APP -->
   <div id="app">
@@ -2980,6 +3016,26 @@
 
   <script>
     /* ══════════════════════════════════════════
+       BACKGROUND MUSIC
+       ══════════════════════════════════════════ */
+    let musicEnabled = false;
+    function toggleMusic() {
+      const bgMusic = document.getElementById('bg-music');
+      const btnMusic = document.getElementById('btn-music');
+      if (!bgMusic || !btnMusic) return;
+
+      if (musicEnabled) {
+        musicEnabled = false;
+        bgMusic.pause();
+        btnMusic.innerHTML = '🎵 Música: OFF';
+      } else {
+        musicEnabled = true;
+        btnMusic.innerHTML = '🎵 Música: ON';
+        bgMusic.play().catch(e => console.log('Music play error:', e));
+      }
+    }
+
+    /* ══════════════════════════════════════════
        NAVIGATION
        ══════════════════════════════════════════ */
     const TOTAL = document.querySelectorAll('.slide').length;
@@ -3056,6 +3112,12 @@
       const newSlide = slides[currentSlide];
       newSlide.classList.add('active');
       newSlide.classList.remove('exit-left');
+
+      // Music logic
+      const bgMusic = document.getElementById('bg-music');
+      if (bgMusic && typeof musicEnabled !== 'undefined' && musicEnabled) {
+        bgMusic.play().catch(e => console.log('Music play error:', e));
+      }
 
       // Update UI
       const pbar = document.getElementById('pbar');
@@ -3417,7 +3479,17 @@
           box.classList.add('req-item', 'v-req');
           if (typeof Vimeo !== 'undefined') {
             const player = new Vimeo.Player(iframe);
+            player.on('play', function() {
+              const bgMusic = document.getElementById('bg-music');
+              if (bgMusic && typeof musicEnabled !== 'undefined' && musicEnabled) {
+                bgMusic.pause();
+              }
+            });
             player.on('ended', function () {
+              const bgMusic = document.getElementById('bg-music');
+              if (bgMusic && typeof musicEnabled !== 'undefined' && musicEnabled) {
+                bgMusic.play().catch(e => console.log('Music play error:', e));
+              }
               player.unload(); // Reseta o player para o estado inicial (esconde a tela final do Vimeo)
               box.classList.add('req-done');
               updateNextButton();
