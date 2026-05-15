@@ -77,12 +77,37 @@
       }
 
       .slide-title {
-        font-size: 18px;
-        margin-top: 6px;
+        font-size: 18px !important;
+        margin-top: 4px;
         line-height: 1.15;
-        display: flex;
-        flex-direction: column;
-        align-items: flex-start;
+        display: block;
+        padding-right: 100px;
+      }
+
+      .slide-title span {
+        display: block;
+      }
+
+      .game-header {
+        margin-top: 55px !important;
+      }
+
+      .game-item-box {
+        height: auto !important;
+        min-height: 80px !important;
+        padding: 10px !important;
+        margin-bottom: 6px !important;
+        border-radius: 12px !important;
+      }
+
+      .game-item-text {
+        font-size: 14px !important;
+      }
+
+      .game-btn {
+        padding: 8px !important;
+        font-size: 12px !important;
+        min-height: 50px !important;
       }
 
       .slide-subtitle {
@@ -133,6 +158,10 @@
       .ndot.cur {
         width: 15px;
         border-radius: 4px;
+      }
+
+      #slide-counter {
+        display: none !important;
       }
 
       /* Content */
@@ -2026,6 +2055,12 @@
 
       .slide-title {
         font-size: clamp(15px, 2.5vw, 22px);
+        margin-top: 10px;
+        padding-right: 100px;
+        display: block;
+      }
+      .slide-title span {
+        display: block;
       }
 
       .nav-btn {
@@ -2035,6 +2070,35 @@
 
       .risk-grid {
         grid-template-columns: repeat(3, 1fr);
+      }
+
+      .game-header {
+        margin-top: 35px !important;
+      }
+
+      .game-item-box {
+        height: auto !important;
+        min-height: 60px !important;
+        padding: 8px !important;
+        margin-bottom: 5px !important;
+        border-radius: 10px !important;
+      }
+
+      .game-item-text {
+        font-size: 13px !important;
+      }
+
+      .game-btn {
+        padding: 6px !important;
+        font-size: 10px !important;
+      }
+
+      .game-controls {
+        gap: 8px !important;
+      }
+
+      #slide-counter {
+        display: none !important;
       }
     }
 
@@ -2367,24 +2431,63 @@
       font-family: var(--font-h);
       font-weight: 700;
       cursor: pointer;
-      backdrop-filter: blur(5px);
+      backdrop-filter: blur(10px);
       display: flex;
       align-items: center;
-      gap: 8px;
-      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-      transition: all 0.3s ease;
+      justify-content: center;
+      gap: 10px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
       top: 20px;
       left: 20px;
-      bottom: auto;
-      right: auto;
+    }
+
+    .btn-music-toggle svg {
+      width: 20px;
+      height: 20px;
+      transition: transform 0.3s ease;
+    }
+
+    .btn-music-toggle:hover {
+      background: rgba(0, 0, 0, 0.8);
+      transform: scale(1.05);
+      border-color: rgba(255, 255, 255, 0.5);
     }
 
     @media (max-width: 768px) {
       .btn-music-toggle {
-        top: auto;
-        bottom: 80px;
-        left: 20px;
+        top: 92px;
+        right: 12px;
+        left: auto;
+        bottom: auto;
+        padding: 10px;
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        background: rgba(0, 0, 0, 0.6);
+        border: 1.5px solid rgba(255, 255, 255, 0.4);
       }
+      .btn-music-toggle .music-text {
+        display: none;
+      }
+      .btn-music-toggle svg {
+        width: 22px;
+        height: 22px;
+      }
+    }
+
+    @media screen and (max-height: 480px) {
+       .btn-music-toggle {
+          top: 58px;
+          right: 10px;
+          width: 32px;
+          height: 32px;
+          padding: 6px;
+       }
+       .btn-music-toggle svg {
+          width: 18px;
+          height: 18px;
+       }
     }
   </style>
 </head>
@@ -2392,8 +2495,11 @@
 <body>
   <!-- BACKGROUND MUSIC -->
   <audio id="bg-music" src="musica/musica.mpeg" loop></audio>
-  <button id="btn-music" onclick="toggleMusic()" class="btn-music-toggle">
-    🎵 Música: OFF
+  <button id="btn-music" onclick="toggleMusic()" class="btn-music-toggle" title="Alternar Música">
+    <span id="music-icon-container">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 5L9.91 7.09 12 9.18V5z"/></svg>
+    </span>
+    <span class="music-text">Música: OFF</span>
   </button>
 
   <!-- APP -->
@@ -3603,15 +3709,22 @@
     function toggleMusic() {
       const bgMusic = document.getElementById('bg-music');
       const btnMusic = document.getElementById('btn-music');
+      const iconContainer = document.getElementById('music-icon-container');
+      const musicText = btnMusic.querySelector('.music-text');
       if (!bgMusic || !btnMusic) return;
+
+      const iconOn = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M3 9v6h4l5 5V5L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>';
+      const iconOff = '<svg viewBox="0 0 24 24" fill="currentColor"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51C20.63 14.91 21 13.5 21 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06c1.38-.31 2.63-.95 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 5L9.91 7.09 12 9.18V5z"/></svg>';
 
       if (musicEnabled) {
         musicEnabled = false;
         bgMusic.pause();
-        btnMusic.innerHTML = '🎵 Música: OFF';
+        iconContainer.innerHTML = iconOff;
+        if (musicText) musicText.textContent = 'Música: OFF';
       } else {
         musicEnabled = true;
-        btnMusic.innerHTML = '🎵 Música: ON';
+        iconContainer.innerHTML = iconOn;
+        if (musicText) musicText.textContent = 'Música: ON';
         bgMusic.play().catch(e => console.log('Music play error:', e));
       }
     }
